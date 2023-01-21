@@ -8,7 +8,7 @@ import re
 import streamlit as st
 
 # 한글 폰트 설정
-plt.rcParams['font.family'] = "AppleGothic"
+# plt.rcParams['font.family'] = "AppleGothic"
 # Windows, 리눅스 사용자
 # plt.rcParams['font.family'] = "NanumGothic"
 plt.rcParams['axes.unicode_minus'] = False
@@ -77,7 +77,7 @@ def read_pensiondata():
     return data
 
 data = read_pensiondata()
-company_name = st.text_input('회사명을 입력해 주세요')
+company_name = st.text_input('회사명을 입력해 주세요', placeholder='검색할 회사명 입력')
 
 if data and company_name:
     output = data.find_company(company_name=company_name)
@@ -123,17 +123,17 @@ if data and company_name:
 
         fig, ax = plt.subplots(1, 2)
 
-        p1 = ax[0].bar(x=[f"{info['업종코드명']}", company_name], height=(comp_output.iloc[0, 0], info['월급여추정']), width=0.7)
+        p1 = ax[0].bar(x=["Average", "Your Company"], height=(comp_output.iloc[0, 0], info['월급여추정']), width=0.7)
         ax[0].bar_label(p1, fmt='%d')
         p1[0].set_color('black')
         p1[1].set_color('red')
-        ax[0].set_title('월급여 비교')
+        ax[0].set_title('Monthly Salary')
 
-        p2 = ax[1].bar(x=[f"{info['업종코드명']}", company_name], height=(comp_output.iloc[1, 0], info['연간급여추정']), width=0.7)
+        p2 = ax[1].bar(x=["Average", "Your Company"], height=(comp_output.iloc[1, 0], info['연간급여추정']), width=0.7)
         p2[0].set_color('black')
         p2[1].set_color('red')
         ax[1].bar_label(p2, fmt='%d')
-        ax[1].set_title('연봉 비교')
+        ax[1].set_title('Yearly Salary')
 
         ax[0].tick_params(axis='both', which='major', labelsize=8, rotation=0)
         ax[0].tick_params(axis='both', which='minor', labelsize=6)
@@ -144,7 +144,10 @@ if data and company_name:
 
         st.markdown('### 동종업계')
         df = data.get_data()
-        st.dataframe(df.loc[df['업종코드'] == info['업종코드'], ['사업장명', '월급여추정', '연간급여추정', '가입자수']].sort_values('연간급여추정', ascending=False).head(10).round(0))
+        st.dataframe(df.loc[df['업종코드'] == info['업종코드'], ['사업장명', '월급여추정', '연간급여추정', '가입자수']]\
+            .sort_values('연간급여추정', ascending=False).head(10).round(0), 
+            use_container_width=True
+        )
         
     else:
         st.subheader('검색결과가 없습니다')
